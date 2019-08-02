@@ -168,7 +168,7 @@ void Tailsitter::update_vtol_state()
 			}*/
 			float ground_speed_2=_local_pos->vx*_local_pos->vx+_local_pos->vy*_local_pos->vy;
 			float time_duration = (hrt_absolute_time() - _vtol_schedule.transition_start)* 1e-6f;
-			if (time_duration > 1.95f && ground_speed_2 < 4.0f) {
+			if ((time_duration > 1.95f && ground_speed_2 < 4.0f) || time_duration > 3.5f) {
 				_vtol_schedule.flight_mode = MC_MODE;
 			}
 			break;
@@ -332,7 +332,7 @@ void Tailsitter::update_transition_state()
 		//float weight = (hrt_absolute_time() - _vtol_schedule.transition_start)*1e-6f/3.0f;
 		_v_att_sp->pitch_body = state_front[1][rk] / 57.3f - 1.57f;
 		//_v_att_sp->thrust = _mc_virtual_att_sp->thrust + 0.8f * (_local_pos->vz - state_front[0][rk]);
-		_v_att_sp->thrust = state_front[2][rk];// + 0.2f * (_local_pos->vz - state_front[0][rk]);
+		_v_att_sp->thrust = state_front[2][rk] + 1.0f * (_local_pos->vz - state_front[0][rk]);
 		if (euler.theta() > -0.785f) {
 			_mc_yaw_weight = 1.0f;//1.0f - weight;
 			_mc_roll_weight = 1.0f;//1.0f - weight;
@@ -384,14 +384,15 @@ void Tailsitter::update_transition_state()
 		float ground_speed_2=_local_pos->vx*_local_pos->vx+_local_pos->vy*_local_pos->vy;
 		//float weight = (hrt_absolute_time() - _vtol_schedule.transition_start)*1e-6f/3.0f;
 		_v_att_sp->pitch_body = state_back[1][rk] / 57.3f - 1.57f;
-		_v_att_sp->thrust = state_back[2][rk] + 0.8f * (_local_pos->vz - state_back[0][rk]);
-		if (euler.theta() > -0.785f) {
+		_v_att_sp->thrust = state_back[2][rk] + 0.2f*(_local_pos->vz-state_back[0][rk]);// 0.8f * (_local_pos->vz - state_back[0][rk]);
+		//if (euler.theta() > -0.785f) {
+		if (rk > 600) {
 			_mc_yaw_weight = 1.0f;//1.0f - weight;
 			_mc_roll_weight = 1.0f;//1.0f - weight;
 		}
 		else {
-			_mc_yaw_weight = 0.0f;//1.0f - weight;
-			_mc_roll_weight = 0.0f;//1.0f - weight;
+			_mc_yaw_weight = float(rk) / float(600);//1.0f - weight;
+			_mc_roll_weight = float(rk) / float(600);//1.0f - weight;
 		}
 		_mc_pitch_weight = 0.5;//(ground_speed_2*ground_speed_2-4.0f)/100.0f;
 		if (ground_speed_2 > 0) {
