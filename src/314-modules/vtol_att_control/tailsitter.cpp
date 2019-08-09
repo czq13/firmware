@@ -334,9 +334,9 @@ void Tailsitter::update_transition_state()
 		_v_att_sp->pitch_body = state_front[1][rk] / 57.3f - 1.57f;
 		//_v_att_sp->thrust = _mc_virtual_att_sp->thrust + 0.8f * (_local_pos->vz - state_front[0][rk]);
 		_v_att_sp->thrust = state_front[2][rk] + 1.0f * (_local_pos->vz - state_front[0][rk]);
-
-		_mc_yaw_weight = 1.0f - float(rk) / float(400);
-		_mc_roll_weight = 1.0f;// - float(rk) / float(400);
+		_v_att_sp->yaw_body=euler.psi();
+		_mc_yaw_weight = 1.0f;
+		_mc_roll_weight = 1.0f;
 
 		_mc_pitch_weight = 0.5;
 	}else if (_vtol_schedule.flight_mode == TRANSITION_FRONT_P2) {
@@ -347,9 +347,9 @@ void Tailsitter::update_transition_state()
 		_v_att_sp->pitch_body = state_front[1][rk] / 57.3f - 1.57f;
 		//_v_att_sp->thrust = _mc_virtual_att_sp->thrust + 0.8f * (_local_pos->vz - state_front[0][rk]);
 		_v_att_sp->thrust = state_front[2][rk] + 2.0f * (_local_pos->vz - state_front[0][rk]);
-
-		_mc_yaw_weight = 0.0;
-		_mc_roll_weight = 0.0;
+		_v_att_sp->yaw_body=euler.psi();
+		_mc_yaw_weight = 1.0;
+		_mc_roll_weight = 1.0;
 		_mc_pitch_weight = 0.0;
 
 	}else if (_vtol_schedule.flight_mode == TRANSITION_FRONT_P3) {
@@ -372,23 +372,16 @@ void Tailsitter::update_transition_state()
 
 		int rk = int(time_since_trans_start* 400);//1e-6f;
 		if (rk > 799) rk = 799;
-		float ground_speed_2=_local_pos->vx*_local_pos->vx+_local_pos->vy*_local_pos->vy;
+		//float ground_speed_2=_local_pos->vx*_local_pos->vx+_local_pos->vy*_local_pos->vy;
 		//float weight = (hrt_absolute_time() - _vtol_schedule.transition_start)*1e-6f/3.0f;
 		_v_att_sp->pitch_body = state_back[1][rk] / 57.3f - 1.57f;
 		_v_att_sp->thrust = state_back[2][rk] + 0.2f*(_local_pos->vz-state_back[0][rk]+1);// 0.8f * (_local_pos->vz - state_back[0][rk]);
 		//if (euler.theta() > -0.785f) {
-		if (rk > 600) {
-			_mc_yaw_weight = 1.0f;//1.0f - weight;
-			_mc_roll_weight = 1.0f;//1.0f - weight;
-		}
-		else {
-			_mc_yaw_weight = float(rk) / float(600);//1.0f - weight;
-			_mc_roll_weight = float(rk) / float(600);//1.0f - weight;
-		}
-		_mc_pitch_weight = 0.5;//(ground_speed_2*ground_speed_2-4.0f)/100.0f;
-		if (ground_speed_2 > 0) {
+		_v_att_sp->yaw_body=euler.psi();
+		_mc_yaw_weight = 1.0f;
+		_mc_roll_weight = 1.0f;
 
-		}
+		_mc_pitch_weight = 0.5;//(ground_speed_2*ground_speed_2-4.0f)/100.0f;
 		if (_mc_pitch_weight > 1.0f) _mc_pitch_weight = 1.0f;
 		if (_mc_pitch_weight < 0.0f) _mc_pitch_weight = 0.0f;
 	}
