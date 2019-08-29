@@ -39,7 +39,7 @@
 *
 */
 /* xj-zhang add first stage in trans*/
-#include <string>
+//#include <string>
 #include "tailsitter.h"
 #include "vtol_att_control_main.h"
 
