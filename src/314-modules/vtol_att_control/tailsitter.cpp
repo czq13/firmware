@@ -378,8 +378,15 @@ void Tailsitter::update_transition_state()
 		_v_att_sp->thrust = state_back[2][rk] + 0.2f*(_local_pos->vz-state_back[0][rk]+1);// 0.8f * (_local_pos->vz - state_back[0][rk]);
 		//if (euler.theta() > -0.785f) {
 		_v_att_sp->yaw_body=euler.psi();
-		_mc_yaw_weight = 1.0f;
-		_mc_roll_weight = 1.0f;
+		//_v_att_sp->disable_mc_yaw_control = true;
+		if (rk > 500) {
+			_mc_yaw_weight = 1.0f;
+			_mc_roll_weight = 1.0f;
+		}
+		else {
+			_mc_yaw_weight = 1.0f;
+			_mc_roll_weight = 1.0f;
+		}
 
 		_mc_pitch_weight = 0.5;//(ground_speed_2*ground_speed_2-4.0f)/100.0f;
 		if (_mc_pitch_weight > 1.0f) _mc_pitch_weight = 1.0f;
