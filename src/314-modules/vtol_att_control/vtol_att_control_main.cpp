@@ -396,7 +396,8 @@ VtolAttitudeControl::is_fixed_wing_requested()
 	bool to_fw = false;
 
 	if (_manual_control_sp.transition_switch != manual_control_setpoint_s::SWITCH_POS_NONE &&
-	    _v_control_mode.flag_control_manual_enabled) {
+	    _v_control_mode.flag_control_manual_enabled &&
+		_v_control_mode.flag_armed) {
 		to_fw = (_manual_control_sp.transition_switch == manual_control_setpoint_s::SWITCH_POS_ON);
 
 	} else {
@@ -605,7 +606,6 @@ void VtolAttitudeControl::task_main()
 	_actuator_inputs_fw    = orb_subscribe(ORB_ID(actuator_controls_virtual_fw));
 
 	parameters_update();  // initialize parameter cache
-
 	_task_should_exit = !_vtol_type->init();
 
 	/* wakeup source*/

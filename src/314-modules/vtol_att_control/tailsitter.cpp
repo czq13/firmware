@@ -84,7 +84,6 @@ Tailsitter::Tailsitter(VtolAttitudeControl *attc) :
 	_params_handles_tailsitter.yaw_control_flag=param_find("ZXJ_TRA_YAW_FLA");
 	_params_handles_tailsitter.height_p=param_find("ZXJ_THR_HEI_P");
 	_manual=_attc->get_manual_control_sp();
-
 }
 
 void
@@ -135,7 +134,7 @@ void Tailsitter::update_vtol_state()
 
 	matrix::Eulerf euler = matrix::Quatf(_v_att->q);
 	float pitch = euler.theta();
-
+	//printf("mode is %d\n",_vtol_schedule.flight_mode);
 	if (!_attc->is_fixed_wing_requested()) {
 
 		switch (_vtol_schedule.flight_mode) { // user switchig to MC mode
