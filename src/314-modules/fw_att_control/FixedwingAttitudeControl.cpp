@@ -284,7 +284,33 @@ FixedwingAttitudeControl::vehicle_manual_poll()
 					_att_sp.roll_body = math::constrain(_att_sp.roll_body, -_parameters.man_roll_max, _parameters.man_roll_max);
 					_att_sp.pitch_body = -_manual.x * _parameters.man_pitch_max + _parameters.pitchsp_offset_rad;
 					_att_sp.pitch_body = math::constrain(_att_sp.pitch_body, -_parameters.man_pitch_max, _parameters.man_pitch_max);
-					_att_sp.yaw_body = 0.0f;
+					/*czq added*/
+					matrix::Dcmf R = matrix::Quatf(_att.q);
+
+					if (_vehicle_status.is_vtol && _parameters.vtol_type == vtol_type::TAILSITTER) {
+						matrix::Dcmf R_adapted = R;		//modified rotation matrix
+
+						/* move z to x */
+						R_adapted(0, 0) = R(0, 2);
+						R_adapted(1, 0) = R(1, 2);
+						R_adapted(2, 0) = R(2, 2);
+
+						/* move x to z */
+						R_adapted(0, 2) = R(0, 0);
+						R_adapted(1, 2) = R(1, 0);
+						R_adapted(2, 2) = R(2, 0);
+
+						/* change direction of pitch (convert to right handed system) */
+						R_adapted(0, 0) = -R_adapted(0, 0);
+						R_adapted(1, 0) = -R_adapted(1, 0);
+						R_adapted(2, 0) = -R_adapted(2, 0);
+
+						/* fill in new attitude data */
+						R = R_adapted;
+					}
+
+					matrix::Eulerf euler_angles(R);
+					_att_sp.yaw_body = euler_angles.psi();//0.0f;
 					_att_sp.thrust = _manual.z;
 
 					Quatf q(Eulerf(_att_sp.roll_body, _att_sp.pitch_body, _att_sp.yaw_body));
