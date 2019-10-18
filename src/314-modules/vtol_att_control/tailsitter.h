@@ -47,6 +47,8 @@
 #include <parameters/param.h>
 #include <drivers/drv_hrt.h>
 
+#include <uORB/topics/czq_throttle.h>
+
 class Tailsitter : public VtolType
 {
 

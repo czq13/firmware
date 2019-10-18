@@ -52,6 +52,8 @@
 #include <uORB/topics/vehicle_gps_position.h>
 #include <uORB/topics/vehicle_command_ack.h>
 
+#include <uORB/topics/czq_throttle.h>
+
 #include <drivers/drv_hrt.h>
 #include <px4_includes.h>
 #include <px4_getopt.h>
@@ -633,6 +635,8 @@ void Logger::add_default_topics()
 	add_topic("telemetry_status");
 	add_topic("vehicle_attitude", 30);
 	//xj-zhang
+	add_topic("czq_throttle",50);
+
 	add_topic("vehicle_euler",30);
 	add_topic("vehicle_attitude_setpoint", 100);
 	add_topic("vehicle_command");
